@@ -19,6 +19,9 @@ def create_app():
     from .routes.access import access_bp
     from .routes.fan import fan_bp
     from .routes.overview import overview_bp
+    
+    from .routes.rfid import rfid_bp
+    app.register_blueprint(rfid_bp)
 
     app.register_blueprint(access_bp)
     app.register_blueprint(fan_bp)

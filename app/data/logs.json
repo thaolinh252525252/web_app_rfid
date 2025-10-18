@@ -552,5 +552,49 @@
     "device_id": "fan_01",
     "command": "off",
     "timestamp": "2025-10-16T11:03:56+07:00"
+  },
+  {
+    "type": "access_attempt",
+    "method": "rfid",
+    "uid": "test1234",
+    "device": "rfid_gate_01",
+    "result": "denied",
+    "timestamp": "2025-10-17T10:59:00+07:00"
+  },
+  {
+    "type": "access_attempt",
+    "method": "rfid",
+    "uid": "test12345haha",
+    "device": "rfid_gate_01",
+    "result": "denied",
+    "timestamp": "2025-10-17T11:03:00+07:00"
+  },
+  {
+    "type": "control",
+    "device_id": "fan_01",
+    "target": "fan",
+    "command": "on",
+    "timestamp": "2025-10-18T00:27:36+07:00"
+  },
+  {
+    "type": "control",
+    "device_id": "fan_01",
+    "target": "fan",
+    "command": "off",
+    "timestamp": "2025-10-18T00:27:37+07:00"
+  },
+  {
+    "type": "control",
+    "device_id": "fan_01",
+    "target": "fan",
+    "command": "on",
+    "timestamp": "2025-10-18T00:27:37+07:00"
+  },
+  {
+    "type": "control",
+    "device_id": "fan_01",
+    "target": "fan",
+    "command": "off",
+    "timestamp": "2025-10-18T00:27:38+07:00"
   }
 ]

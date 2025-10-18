@@ -56,6 +56,15 @@
       "deactivated_at": "2025-09-30T18:00:00Z",
       "last_used": "2025-09-30T17:45:00Z",
       "deactivation_reason": "Employee left company"
+    },
+    "test1234": {
+      "active": true,
+      "owner": "minh tu",
+      "card_type": "MIFARE Classic",
+      "description": "nô tỳ",
+      "registered_at": "2025-10-17T08:35:10+07:00",
+      "last_used": null,
+      "expires_at": null
     }
   },
   "devices": {

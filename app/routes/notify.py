@@ -54,6 +54,23 @@ def notify_today():
             evt = e.get("event", "-")
             text = f"[{ts.strftime('%H:%M:%S')}] SYSTEM {evt}"
             color = "gray"
+        elif typ == "rfid_admin":
+            action = e.get("action", "-")
+            uid = e.get("uid", "-")
+            owner = e.get("owner") or "-"
+            if action == "add":
+                text = f"[{ts.strftime('%H:%M:%S')}] RFID ADD uid={uid} owner={owner}"
+                color = "blue"
+            elif action == "update":
+                text = f"[{ts.strftime('%H:%M:%S')}] RFID UPDATE uid={uid} owner={owner}"
+                color = "blue"
+            elif action == "delete":
+                text = f"[{ts.strftime('%H:%M:%S')}] RFID DELETE uid={uid} owner={owner}"
+                color = "orange"
+            else:
+                text = f"[{ts.strftime('%H:%M:%S')}] RFID ADMIN {action} uid={uid} owner={owner}"
+                color = "gray"
+
 
         else:
             text = f"[{ts.strftime('%H:%M:%S')}] {typ or 'event'}"

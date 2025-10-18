@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>IoT Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('ui.static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- Phone frame -->
+<div class="stage">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <div class="container">
+
+        <div class="header">
+          <h1>Gateway</h1>
+          <div class="muted" id="clock"></div>
+        </div>
+
+        <div class="tabs tabs-mobile">
+          <button class="tab active" data-tab="passkey">Passkey</button>
+          <button class="tab" data-tab="fan">Quạt</button>
+          <button class="tab" data-tab="notify">Thông báo</button>
+          <button class="tab" data-tab="rfid">RFID</button>
+        </div>
+
+        <!-- PASSKEY -->
+        <section id="tab-passkey" class="active">
+          <div class="card">
+            <h2>Nhập Passkey</h2>
+            <div class="row">
+              <input id="pass_input" class="input-pass" inputmode="numeric" autocomplete="one-time-code" placeholder="••••••" readonly>
+              <button class="secondary" onclick="clearPass()">Xoá</button>
+            </div>
+            <div class="kp-wrap">
+              <button class="kp-btn" onclick="pressNum('1')">1</button>
+              <button class="kp-btn" onclick="pressNum('2')">2</button>
+              <button class="kp-btn" onclick="pressNum('3')">3</button>
+              <button class="kp-btn" onclick="pressNum('4')">4</button>
+              <button class="kp-btn" onclick="pressNum('5')">5</button>
+              <button class="kp-btn" onclick="pressNum('6')">6</button>
+              <button class="kp-btn" onclick="pressNum('7')">7</button>
+              <button class="kp-btn" onclick="pressNum('8')">8</button>
+              <button class="kp-btn" onclick="pressNum('9')">9</button>
+              <button class="kp-btn secondary" onclick="backspace()">⌫</button>
+              <button class="kp-btn" onclick="pressNum('0')">0</button>
+              <button class="kp-btn enter" onclick="submitPasscode()">Enter</button>
+            </div>
+            <div id="pass_status" class="status muted"></div>
+          </div>
+        </section>
+
+        <!-- FAN -->
+        <section id="tab-fan">
+          <div class="card">
+            <h2>Điều khiển quạt</h2>
+            <div class="row">
+              <select id="fdev"><option value="fan_01">fan_01</option></select>
+              <div id="toggler" class="toggle" onclick="toggleFan()"><div class="dot"></div></div>
+              <button class="secondary" onclick="loadFan()">Tải</button>
+            </div>
+            <div class="muted" id="fan_hint">Ghi desired_state vào config để gateway đọc.</div>
+          </div>
+        </section>
+
+        <!-- NOTIFY -->
+        <section id="tab-notify">
+          <div class="card">
+            <h2>Thông báo hôm nay</h2>
+            <div id="feed" class="feed"></div>
+          </div>
+        </section>
+
+        <!-- RFID -->
+        <section id="tab-rfid">
+          <div class="card">
+            <h2>Quản lý RFID</h2>
+            <div class="row">
+              <input id="rfid_search" placeholder="Tìm theo UID/Owner..." oninput="filterRfid()">
+              <button onclick="startAddRfid()">Thêm thẻ</button>
+            </div>
+            <div id="rfid_list" class="listbox"></div>
+
+            <div class="space-8"></div>
+            <h3 class="subtle">Lịch sử vào/ra (mới nhất trước)</h3>
+            <div id="rfid_logs" class="feed"></div>
+          </div>
+        </section>
+
+      </div>
+      <div class="homebar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- Modal chờ quét -->
+<div id="scan_backdrop" class="modal-backdrop">
+  <div class="modal">
+    <h3>Thêm thẻ RFID</h3>
+    <div class="muted" id="scan_status"><span class="spinner"></span>Đang chờ bạn quét thẻ…</div>
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeScanModal()">Hủy</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edit/Add RFID -->
+<div id="rfid_modal" class="modal-backdrop">
+  <div class="modal">
+    <h3 id="rfid_modal_title">Thông tin thẻ</h3>
+    <div class="row"><input id="f_uid" placeholder="UID (hex)"></div>
+    <div class="row"><input id="f_owner" placeholder="Chủ thẻ (Owner)"></div>
+    <div class="row"><input id="f_type" placeholder="Card type" value="MIFARE Classic"></div>
+    <div class="row"><input id="f_desc" placeholder="Mô tả"></div>
+    <div class="row"><input id="f_expires" placeholder="Hết hạn (ISO) - tuỳ chọn"></div>
+    <div class="row"><label><input type="checkbox" id="f_active" checked> Active</label></div>
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeEditModal()">Đóng</button>
+      <button class="secondary" onclick="deleteRfid()">Xoá</button>
+      <button onclick="saveRfid()">Lưu</button>
+    </div>
+    <div class="muted" id="rfid_hint"></div>
+  </div>
+</div>
+
+<!-- Modal chi tiết log -->
+<div id="log_backdrop" class="modal-backdrop">
+  <div class="modal">
+    <h3>Chi tiết lượt vào/ra</h3>
+    <div class="row"><div class="muted">UID</div><div id="lg_uid"></div></div>
+    <div class="row"><div class="muted">Owner</div><div id="lg_owner"></div></div>
+    <div class="row"><div class="muted">Device</div><div id="lg_device"></div></div>
+    <div class="row"><div class="muted">Kết quả</div><div id="lg_result"></div></div>
+    <div class="row"><div class="muted">Thời gian</div><div id="lg_time"></div></div>
+    <div class="modal-actions"><button class="secondary" onclick="closeLogModal()">Đóng</button></div>
+  </div>
+</div>
+
+<script src="{{ url_for('ui.static', filename='ui.js') }}"></script>
+</body>
+</html>
